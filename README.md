@@ -7,4 +7,4 @@ Librerias Requeridas
 
 Selenium 4.7.2
 python-dotenv 0.21.0
-
+PyAutoGUI 0.9.53
