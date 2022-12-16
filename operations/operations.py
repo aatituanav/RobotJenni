@@ -4,6 +4,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.keys import Keys
 import customFunctions.customFunctions as CF
+from operations.Observation import Observation
 import os 
 import pyautogui
 import time
@@ -151,6 +152,11 @@ def followCustomers(browser):
     messagesTemplate = ['','Buenos días XXXX le saluda Katherine Quintana, Asesora Inmobiliaria de trivo.','Le escribo porque queremos saber si aún tiene interés en adquirir bienes inmuebles.']
     linkWhatsaPo = ''
     sector = '' # de acuerdo al sector, aparecen unas opciones u otras
+    observations = [
+        Observation("whatsapp", 'Seguimiento.'),
+        Observation("whatsapp", 'Se enviaron fotos de Lucia.'),
+        Observation("nota", 'Esperando contestación.'),
+    ]
     
 
     def findCustomertoEdit(browser):
@@ -205,6 +211,7 @@ def followCustomers(browser):
         #obtengo el numero de celular del cliente
         phoneField = browser.find_element(By.XPATH,'//*[@id="root"]/div/div[2]/div/div/div/div[1]/div[2]/div/table/tbody/tr/td[1]/div/div[2]/a/h6')
         phoneNumber = phoneField.text.strip()
+
         #avanzo a la siguiente paguina
         siguientesAccionesButton.click()
 
@@ -255,6 +262,20 @@ def followCustomers(browser):
         #regreso a donde inicie (A la tabla de clientes)
         goBackFirst = browser.find_element(By.XPATH,'//*[@id="root"]/div/div[2]/div/div/div/div/div[1]/div/button')
         goBackFirst.click()
+        
+        ##procedo a añadir las notas del seguimiento
+        for observation in observations:
+            interactionsList = browser.find_element(By.XPATH,'//*[@id="root"]/div/div[2]/div/div/div/div[2]/div[3]/div[2]/div/div/div/div')
+            interactionsList.click()
+            observationOption = browser.find_element(By.XPATH, observation.xpath)
+            observationOption.click()
+            textArea = browser.find_element(By.XPATH, '//*[@id="root"]/div/div[2]/div/div/div/div[2]/div[3]/div[3]/div/div/textarea')
+            textArea.send_keys(observation.message)
+            addObservationButton = browser.find_element(By.XPATH, '//*[@id="root"]/div/div[2]/div/div/div/div[2]/div[3]/div[4]/button') 
+            addObservationButton.click()
+            WebDriverWait(browser, 10).until(
+                EC.invisibility_of_element_located((By.XPATH,'//*[@id="root"]/div/div[2]/div/div[2]/div[2]/div[2]/div[8]/div[1]/div/*[name()="svg"]'))
+            )
         goBackTable = browser.find_element(By.XPATH,'//*[@id="root"]/div/div[2]/div/div/div/div[1]/div[1]/button')
         goBackTable.click()
 
