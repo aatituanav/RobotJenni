@@ -62,8 +62,7 @@ def sendInfoWhatsApp(browser, phone, messages, dirImages):
     ##phone: numero de telefono al cual enviar la informacion
     ##browser: la instancia del navegador en el cual esta trabajando el robot
     
-    phone = '+593993055278'
-    
+    #phone = '+593993055278'
     try:
         #cambio a la nueva ventana que se abrio automaticamente
         browser.switch_to.window(browser.window_handles[1])        
@@ -142,7 +141,7 @@ def sendInfoWhatsApp(browser, phone, messages, dirImages):
             
         
     except:
-        print('ERROR DESCONOCIDO ENVIANDO LA INFORMACION POR WHATSAPP...')
+        print('ERROR DESCONOCIDO CUANDO SE ENVIABA LA INFORMACION POR WHATSAPP...')
         sys.exit()
         #browser.quit()
 
@@ -258,7 +257,7 @@ def followCustomers(browser):
         ##pyautogui.hotkey('ctrl', 't')                                                                               ##BORRAR ESTA INSTRUCCION           
 
         #envio info por whatsapp
-        sendInfoWhatsApp(browser, phoneNumber, messages, os.getenv("IMAGESDIR"))
+        sendInfoWhatsApp(browser, phoneNumber, messages, '%s\\Pictures\\FotosTrivo\\Lucia' %(os.path.expanduser("~")))
         #regreso a donde inicie (A la tabla de clientes)
         goBackFirst = browser.find_element(By.XPATH,'//*[@id="root"]/div/div[2]/div/div/div/div/div[1]/div/button')
         goBackFirst.click()
@@ -273,6 +272,7 @@ def followCustomers(browser):
             textArea.send_keys(observation.message)
             addObservationButton = browser.find_element(By.XPATH, '//*[@id="root"]/div/div[2]/div/div/div/div[2]/div[3]/div[4]/button') 
             addObservationButton.click()
+            time.sleep(1)
             WebDriverWait(browser, 10).until(
                 EC.invisibility_of_element_located((By.XPATH,'//*[@id="root"]/div/div[2]/div/div[2]/div[2]/div[2]/div[8]/div[1]/div/*[name()="svg"]'))
             )

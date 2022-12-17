@@ -4,21 +4,23 @@ from dotenv import load_dotenv
 import os 
 import time
 import customFunctions.customFunctions as cf
+import sys
 
 #cargo las variables de entorno
 load_dotenv()
 email = os.getenv("EMAIL")
 password = os.getenv("PASSWORD")
 projectName = os.getenv("PROJECTNAME")
-userdata =  os.getenv("USERDATA")
+userdata =  '%s\\AppData\\Local\\Google\\Chrome\\User Data' %(os.path.expanduser("~"))
 
 #configuracion de opciones para evitar que el navegador se cierre una vez ejecutadas las instrucciones
 options = webdriver.ChromeOptions() 
 options.add_argument('--user-data-dir=%s' % (userdata))
 options.add_experimental_option("detach", True)
 
+application_path = os.path.dirname(sys.executable)
 #instanciamiento del webdriver
-browser = webdriver.Chrome(executable_path="chromedriver.exe", options=options)
+browser = webdriver.Chrome(executable_path= '%s\\chromedriver.exe' %(application_path), options=options)
 
 #abrir la paguina
 browser.get('https://admin.trivo.com.ec/login')
