@@ -62,7 +62,7 @@ def sendInfoWhatsApp(browser, phone, messages, dirImages):
     ##phone: numero de telefono al cual enviar la informacion
     ##browser: la instancia del navegador en el cual esta trabajando el robot
     
-    #phone = '+593993055278'
+    phone = '+593993055278'
     try:
         #cambio a la nueva ventana que se abrio automaticamente
         browser.switch_to.window(browser.window_handles[1])        
@@ -97,7 +97,13 @@ def sendInfoWhatsApp(browser, phone, messages, dirImages):
             
             time.sleep(1.5)
 
-            pyautogui.write('"%s\\Lucia (7).jpeg" "%s\\Lucia (1).jpeg" "%s\\Lucia (2).jpeg"' % (dirImages,dirImages,dirImages))  
+            ##obtengo el path de todas las imagenes en la carpeta Imagenes/FotosTrivo/Lucia
+            imageInput = ''
+            for image in os.listdir(dirImages):
+                imageInput += '"'+ dirImages +"\\"+ image + '" '
+
+
+            pyautogui.write(imageInput)  
             pyautogui.press('enter')
 
             sendImageButton = WebDriverWait(browser, 10).until(
