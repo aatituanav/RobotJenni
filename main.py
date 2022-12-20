@@ -20,6 +20,7 @@ options.add_experimental_option("detach", True)
 
 application_path = os.path.dirname(sys.executable)
 #instanciamiento del webdriver
+
 browser = webdriver.Chrome(executable_path= '%s\\chromedriver.exe' %(application_path), options=options)
 
 #abrir la paguina
