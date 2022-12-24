@@ -25,5 +25,5 @@ application_path = os.path.dirname(sys.executable)
 browser = webdriver.Chrome(executable_path= '%s\\chromedriver.exe' %(application_path), options=options)
 
 ##INICIO EL ROBOT DE LUCIA
-#robotLucia.startLuciaRobot(browser)
-robotTrivo.startTrivoRobot(browser)
+robotLucia.startLuciaRobot(browser)
+#robotTrivo.startTrivoRobot(browser)

@@ -35,7 +35,6 @@ def iniciarSesionTrivo(browser, email, password, projectName):
         print(e)
         browser.quit()
 
-
 def orderDataTableByLastContact(browser):
     #ordeno la tabla
     try:
@@ -115,7 +114,6 @@ def findCustomertoEdit(browser):
                 return ('//*[@id="root"]/div/div[2]/div/div/div[2]/table/tbody/tr[%s]' % (i))
         #print('TODAS LOS CLIENTES QUE SE MUESTRAN EN LA TABLA SON NUEVOS')
         return ''
-
 
 def sendInfoWhatsApp(browser, phone, messages, dirImages):
     ##este metodo solo funciona para enviar 3 fotos que se encuentren en dirImages
@@ -213,7 +211,6 @@ def sendInfoWhatsApp(browser, phone, messages, dirImages):
         browser.switch_to.window(browser.window_handles[0])
         return False
 
-
 def scheduleTask(browser, mensaje, diasDeEspera):
     #SECCION DE AGENDAMIENTO DE NUEVA TAREA
     #mensaje: es el titulo de la tarea
@@ -224,6 +221,7 @@ def scheduleTask(browser, mensaje, diasDeEspera):
         EC.presence_of_element_located((By.XPATH, '/html/body/div[5]/div[2]/div/div[2]/div[1]/div/input'))
     )
     titleInput.send_keys(mensaje)
+    time.sleep(0.2)
     dateField = browser.find_element(By.XPATH, '/html/body/div[5]/div[2]/div/div[2]/div[3]/div/div/input')
     dateField.click()
     time.sleep(0.1)
@@ -245,7 +243,6 @@ def scheduleTask(browser, mensaje, diasDeEspera):
     #=============================================================================================
     #=============================================================================================
 
-
 def fillObservations(browser, observation):
     interactionsList = browser.find_element(By.XPATH,'//*[@id="root"]/div/div[2]/div/div/div/div[2]/div[3]/div[2]/div/div/div/div')
     interactionsList.click()
@@ -259,7 +256,6 @@ def fillObservations(browser, observation):
     WebDriverWait(browser, 30).until(
         EC.invisibility_of_element_located((By.XPATH,'//*[@id="root"]/div/div[2]/div/div[2]/div[2]/div[2]/div[8]/div[1]/div/*[name()="svg"]'))
     )
-
 
 def doTracktoCustomer(browser, xpathOfCustomer, hasLead, messagesTemplate, observations, xpathDictionary):
     #hago click en el cliente que mas tiempo le tengo olvidado
@@ -313,10 +309,11 @@ def doTracktoCustomer(browser, xpathOfCustomer, hasLead, messagesTemplate, obser
     for index, message in enumerate(messages):
         #en el primer mensaje, coloco nombre y apellido, si hay demas mensajes, solo coloco el nombre
         if index > 0:
-            message = message.replace('XXXX', name.split()[0])
+            messages[index] = message.replace('XXXX', name.split()[0])
         else:
-            message = message.replace('XXXX', name)
-    
+            messages[index] = message.replace('XXXX', name)
+    print(name, messages)
+    time.sleep(9999)
     #click en el boton para continuar (Esto abre whatsapp en una nueva ventana)
     continueButton.click()
     #confirmar que deseo continuar

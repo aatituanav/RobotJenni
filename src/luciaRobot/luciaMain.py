@@ -1,5 +1,6 @@
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
+from src.model.ProjectXPath import XPathByProject
 from src.model.Observation import Observation
 from selenium.webdriver.common.by import By
 
@@ -29,7 +30,7 @@ def startLuciaRobot(browser):
     while True:
         #obtengo el xpath de la fila del cliente que lleva mas tiempo sin interacciones
         xpath = operations.findCustomertoEdit(browser)
-
+        xpathDictionary = XPathByProject('lucia')
         ### NOTA IMPORTANTE
         ### En una parte del cuestionario, los clientes que tienen sector definido (eso se ve en la tabla con un signo '-'), se les muestra una opcion extra (en la primera posicion)
         ### La opcion es "ASIGNAR LEAD", la cual va en la primera posicion del cuestionario
@@ -42,7 +43,7 @@ def startLuciaRobot(browser):
         if not CF.validDateforContinue(lastDateContact, 50):
             break
             
-        operations.doTracktoCustomer(browser, xpath, hasLead, messagesTemplate, observations)
+        operations.doTracktoCustomer(browser, xpath, hasLead, messagesTemplate, observations, xpathDictionary)
 
         
 
