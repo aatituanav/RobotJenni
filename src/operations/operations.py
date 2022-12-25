@@ -312,8 +312,7 @@ def doTracktoCustomer(browser, xpathOfCustomer, hasLead, messagesTemplate, obser
             messages[index] = message.replace('XXXX', name.split()[0])
         else:
             messages[index] = message.replace('XXXX', name)
-    print(name, messages)
-    time.sleep(9999)
+
     #click en el boton para continuar (Esto abre whatsapp en una nueva ventana)
     continueButton.click()
     #confirmar que deseo continuar

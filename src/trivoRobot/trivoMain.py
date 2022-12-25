@@ -28,6 +28,12 @@ def startTrivoRobot(browser):
 
     operations.orderDataTableByLastContact(browser)
 
+    srcLogo = browser.find_element(By.XPATH, '//*[@id="root"]/div/header/div/a/img').get_attribute('src')
+    if srcLogo != 'https://s3.us-east-2.amazonaws.com/media.trivo.com.ec/Companies/1585002874423-lg.png':
+        print('ACTUALMENTE LA SESIÓN ESTÁ INICIADA EN OTRO PROYECTO... CAMBIE LA SESION E INICIE EL ROBOT NUEVAMENTE')
+        browser.quit()
+        return
+        
     while True:
         #obtengo el xpath de la fila del cliente que lleva mas tiempo sin interacciones
         xpath = operations.findCustomertoEdit(browser)

@@ -7,5 +7,8 @@ class XPathByProject:
         elif project == 'lucia':
             self.name = 'Lucia'
             self.LI_seguimientoInfoInicialEnviada = '//*[@id="menu-Enviar whatsapp"]/div[2]/ul/li[3]'
+        elif project == 'promonsa':
+            self.name = 'Promonsa'
+            self.LI_seguimientoInfoInicialEnviada = '//*[@id="menu-Enviar whatsapp"]/div[2]/ul/li[3]'
 
 
