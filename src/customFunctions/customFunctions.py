@@ -86,10 +86,10 @@ def formatPhoneNumber(phoneNumber):
     
 
 def validDateforContinue(date, days):
-    #determina si la fecha ha pasado los n dias
-    DateFlag = datetime.now() - timedelta(days=50)
-    DateLastContact = datetime.strptime(date, "%Y-%m-%d")
-    if DateFlag >= DateLastContact:
+    #solo acepta fechas menores a n dias 
+    curentDate = datetime.now()
+    dateLastContact = datetime.strptime(date, "%Y-%m-%d") + timedelta(days=days)
+    if dateLastContact <= curentDate:
         return True
     else:
         return False

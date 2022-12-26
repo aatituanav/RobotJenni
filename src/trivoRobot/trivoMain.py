@@ -14,10 +14,7 @@ import os
 
 def startTrivoRobot(browser):
 
-    print('robot Trivo Iniciado')
-    #abrir la paguina
-    browser.get('https://admin.trivo.com.ec/leads')
-
+    xpathDictionary = XPathByProject('trivo')
     messagesTemplate = ['']
     observations = [
         Observation("whatsapp", 'Seguimiento.'),
@@ -26,18 +23,14 @@ def startTrivoRobot(browser):
         Observation("nota", 'Esperando contestación.'),
     ]
 
-    operations.orderDataTableByLastContact(browser)
+    operations.login(browser, xpathDictionary)
+    browser.get('https://admin.trivo.com.ec/leads')
 
-    srcLogo = browser.find_element(By.XPATH, '//*[@id="root"]/div/header/div/a/img').get_attribute('src')
-    if srcLogo != 'https://s3.us-east-2.amazonaws.com/media.trivo.com.ec/Companies/1585002874423-lg.png':
-        print('ACTUALMENTE LA SESIÓN ESTÁ INICIADA EN OTRO PROYECTO... CAMBIE LA SESION E INICIE EL ROBOT NUEVAMENTE')
-        browser.quit()
-        return
+    operations.orderDataTableByLastContact(browser)
         
     while True:
         #obtengo el xpath de la fila del cliente que lleva mas tiempo sin interacciones
         xpath = operations.findCustomertoEdit(browser)
-        xpathDictionary = XPathByProject('trivo')
         ### NOTA IMPORTANTE
         ### En una parte del cuestionario, los clientes que tienen sector definido (eso se ve en la tabla con un signo '-'), se les muestra una opcion extra (en la primera posicion)
         ### La opcion es "ASIGNAR LEAD", la cual va en la primera posicion del cuestionario

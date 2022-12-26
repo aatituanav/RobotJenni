@@ -9,26 +9,14 @@ import time
 import sys
 import os
 
-def iniciarSesionTrivo(browser, email, password, projectName):
+def iniciarSesion(browser, projectObject):
     try:
-        projectNameField = WebDriverWait(browser, 30).until(
-            EC.presence_of_element_located((By.XPATH, '//*[@id="root"]/div/div/div/form/div/div/input')) #This is a dummy element
-        )
-        projectNameField.send_keys(projectName)
-        projectNameField.send_keys(Keys.ENTER)
-    except Exception as e:
-        print(e)
-        browser.quit()
-
-    try:
-        #espero a que se cargue el campo de texto del correo
-        emailField = WebDriverWait(browser, 30).until(
-            EC.presence_of_element_located((By.XPATH, '//*[@id="root"]/div/div/div/div/form/div/div[1]/div/input')) #This is a dummy element
-        )
-        emailField.send_keys(email)
+        print('asdfa')
+        emailField = browser.find_element(By.XPATH, '//*[@id="root"]/div/div/div/div/form/div/div[1]/div/input')
+        emailField.send_keys(projectObject.email)
         #encuentro el campo de texto para contrasenia
         passwordField = browser.find_element(By.XPATH, '//*[@id="root"]/div/div/div/div/form/div/div[2]/div/input')
-        passwordField.send_keys(password)
+        passwordField.send_keys(projectObject.password)
         time.sleep(1)
         passwordField.send_keys(Keys.ENTER)
     except Exception as e: 
@@ -105,7 +93,7 @@ def findCustomertoEdit(browser):
         numberofRows = 20
         ##la informacion se muestra desde la posicion 1, (0 es para la cabecera)
         WebDriverWait(browser, 30).until(
-            EC.presence_of_element_located((By.XPATH,'//*[@id="root"]/div/div[2]/div/div/div[2]/table/tbody/tr[1]/td[12]'))
+            EC.visibility_of_element_located((By.XPATH,'//*[@id="root"]/div/div[2]/div/div/div[2]/table/tbody/tr[1]/td[12]'))
         )
 
         for i in range(1, numberofRows + 1):
@@ -139,7 +127,7 @@ def sendInfoWhatsApp(browser, phone, messages, dirImages):
                     CF.raise_error_if_text_is_present_in_element((By.XPATH,'//*[@id="app"]/div/span[2]/div/span/div/div/div/div/div/div[2]/div/div/div/div'), 'OK'),
                     EC.all_of(
                         #espero a que el cuadro de texto para enviar mensajes
-                        EC.presence_of_element_located((By.XPATH,'//*[@id="main"]/footer/div[1]/div/span[2]/div/div[2]/div[1]/div/div[1]')),   
+                        EC.visibility_of_element_located((By.XPATH,'//*[@id="main"]/footer/div[1]/div/span[2]/div/div[2]/div[1]/div/div[1]')),   
                         #espero a que el popup "Cargando mensajes" se haya terminado de cargar
                         EC.invisibility_of_element_located((By.XPATH,'//*[@id="app"]/div/span[2]/div/span/div/div/div/div'))
                     )
@@ -218,7 +206,7 @@ def scheduleTask(browser, mensaje, diasDeEspera):
     #=============================================================================================
     #=============================================================================================
     titleInput = WebDriverWait(browser, 30).until(
-        EC.presence_of_element_located((By.XPATH, '/html/body/div[5]/div[2]/div/div[2]/div[1]/div/input'))
+        EC.visibility_of_element_located((By.XPATH, '/html/body/div[5]/div[2]/div/div[2]/div[1]/div/input'))
     )
     titleInput.send_keys(mensaje)
     time.sleep(0.2)
@@ -228,7 +216,7 @@ def scheduleTask(browser, mensaje, diasDeEspera):
     
     #espero a que el datepicker se muestre en el dom
     WebDriverWait(browser, 30).until(
-        EC.presence_of_element_located((By.XPATH,'//*[@id="picker-popover"]/div[2]'))                
+        EC.visibility_of((By.XPATH,'//*[@id="picker-popover"]/div[2]'))                
     )
     #selecciono la fecha
     selectDateInDatePicker(browser, CF.addDays(diasDeEspera))
@@ -301,7 +289,7 @@ def doTracktoCustomer(browser, xpathOfCustomer, hasLead, messagesTemplate, obser
     selectFieldSecondOption.click()
     #copio el mensaje que se enviara al whatsapo
     messageField = WebDriverWait(browser, 30).until(
-        EC.presence_of_element_located((By.XPATH,'//*[@id="root"]/div/div[2]/div/div/div/div/div[2]/div[%s]/div[2]/div[2]/div[2]/div' %('3' if hasLead else '2')))
+        EC.visibility_of_element_located((By.XPATH,'//*[@id="root"]/div/div[2]/div/div/div/div/div[2]/div[%s]/div[2]/div[2]/div[2]/div' %('3' if hasLead else '2')))
     )  
     #guardo el mensaje
     messages = messagesTemplate[:]
@@ -363,3 +351,41 @@ def doTracktoCustomer(browser, xpathOfCustomer, hasLead, messagesTemplate, obser
     WebDriverWait(browser, 30).until(
         EC.invisibility_of_element_located((By.XPATH,'//*[@id="root"]/div/div[2]/div/div/*[name()="svg"]'))
     )
+
+def login(browser, projectObject):
+    print('se inicia sesion en '+projectObject.name)
+    browser.get('https://admin.trivo.com.ec/login/'+projectObject.name.lower())
+
+    elementToWait = WebDriverWait(browser, 30).until(
+        EC.any_of(
+            (EC.visibility_of_element_located((By.XPATH,'//*[@id="root"]/div/header/div/a/img'))),
+            (EC.visibility_of_element_located((By.XPATH,'//*[@id="root"]/div/div/div/div/h1')))
+        )
+    )
+    tag_name = elementToWait.tag_name
+
+    if tag_name == 'h1':
+        #en el caso de que no este iniciada la sesion, simplemente la inicia
+        iniciarSesion(browser, projectObject)
+        #espero a que el elemento se haya ido del dom (es para el robot de trivo, ya que necesita abrir otra pestaña)
+        WebDriverWait(browser, 30).until(
+            EC.invisibility_of_element(elementToWait)
+        )
+    elif tag_name == 'img':
+        #si la sesion esta iniciada, 
+        #verifico que este en la sesion correcta
+        srcLogo = browser.find_element(By.XPATH, '//*[@id="root"]/div/header/div/a/img').get_attribute('src')
+        if srcLogo != projectObject.srcLogo:
+            print('Se iniciará correctamente la sesión')
+            logoutButton = browser.find_element(By.XPATH, '//*[@id="root"]/div/header/div/button[2]')
+            logoutButton.click()
+            login(browser, projectObject)
+
+
+
+
+
+    
+    
+
+    
