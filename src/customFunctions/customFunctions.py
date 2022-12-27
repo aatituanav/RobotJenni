@@ -1,5 +1,7 @@
 from datetime import datetime, timedelta
 from selenium.webdriver.common.by import By
+import sys
+import os
 
 
 def allImagesSent(numberOfImagesSent, numberOfElements):
@@ -98,3 +100,14 @@ def validDateforContinue(date, days):
 def addDays(daysAdded):
     #dateFormatted = datetime.strptime(date, "%Y-%m-%d")
     return (datetime.now() + timedelta(days=daysAdded)).strftime("%Y-%m-%d")
+
+
+def resource_path(relative_path):
+    """ Get absolute path to resource, works for dev and for PyInstaller """
+    try:
+        # PyInstaller creates a temp folder and stores path in _MEIPASS
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath(".")
+
+    return os.path.join(base_path, relative_path)

@@ -11,7 +11,6 @@ import os
 
 def iniciarSesion(browser, projectObject):
     try:
-        print('asdfa')
         emailField = browser.find_element(By.XPATH, '//*[@id="root"]/div/div/div/div/form/div/div[1]/div/input')
         emailField.send_keys(projectObject.email)
         #encuentro el campo de texto para contrasenia
@@ -376,7 +375,7 @@ def login(browser, projectObject):
         #verifico que este en la sesion correcta
         srcLogo = browser.find_element(By.XPATH, '//*[@id="root"]/div/header/div/a/img').get_attribute('src')
         if srcLogo != projectObject.srcLogo:
-            print('Se iniciará correctamente la sesión')
+            print('La sesión está en otro proyecto')
             logoutButton = browser.find_element(By.XPATH, '//*[@id="root"]/div/header/div/button[2]')
             logoutButton.click()
             login(browser, projectObject)

@@ -14,17 +14,18 @@ import os
 
 
 #cargo las variables de entorno
-load_dotenv()
+load_dotenv(dotenv_path=cf.resource_path('.env'))
+
 userdata =  '%s\\AppData\\Local\\Google\\Chrome\\User Data' %(os.path.expanduser("~"))
 
 #configuracion de opciones para evitar que el navegador se cierre una vez ejecutadas las instrucciones
-options = webdriver.ChromeOptions() 
+options = webdriver.ChromeOptions()
 options.add_argument('--user-data-dir=%s' % (userdata))
 options.add_experimental_option('excludeSwitches', ['enable-logging'])
 options.add_experimental_option("detach", True)
 
 application_path = os.path.dirname(sys.executable)
-driver_service = Service(executable_path= '%s\\chromedriver.exe' %(application_path))
+driver_service = Service(executable_path= cf.resource_path('chromedriver.exe'))
 
 if datetime.now() <= datetime.strptime('2023-01-26', "%Y-%m-%d"):
     while True:

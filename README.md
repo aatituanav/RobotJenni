@@ -8,5 +8,4 @@ Librerias Requeridas
 selenium 4.7.2
 python-dotenv 0.21.0
 PyAutoGUI 0.9.53
-PyQt5 5.15.7
 auto-py-to-exe 
