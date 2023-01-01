@@ -12,11 +12,13 @@ import os
 def iniciarSesion(browser, projectObject):
     try:
         emailField = browser.find_element(By.XPATH, '//*[@id="root"]/div/div/div/div/form/div/div[1]/div/input')
+        emailField.clear()
         emailField.send_keys(projectObject.email)
         #encuentro el campo de texto para contrasenia
         passwordField = browser.find_element(By.XPATH, '//*[@id="root"]/div/div/div/div/form/div/div[2]/div/input')
+        passwordField.clear()
         passwordField.send_keys(projectObject.password)
-        time.sleep(1)
+        time.sleep(0.5)
         passwordField.send_keys(Keys.ENTER)
     except Exception as e: 
         print(e)
@@ -111,7 +113,7 @@ def sendInfoWhatsApp(browser, phone, messages, dirImages):
 
     #cambio a la nueva ventana que se abrio automaticamente
     
-    phone = '+593993055278'
+    #phone = '+593993055278'
     phoneformatted = CF.formatPhoneNumber(phone)
 
     ##verifico que sea un numero de celular con +593 para quitarle
@@ -167,17 +169,16 @@ def sendInfoWhatsApp(browser, phone, messages, dirImages):
         time.sleep(4)
         ##espero a que se haya enviado la imagen, y cierro la pestaña de whatsapp
         ##obtengo el div del chat, el cual tiene todos los divs de los mensajes (la cantidad de divs internos es la cantidad de mensajes cargados en la web)
-        chatContainer = browser.find_element(By.XPATH,'//*[@id="main"]/div[2]/div/div[2]/div[3]')
-        messagesContainers = chatContainer.find_elements(By.XPATH,'*')
-        #print('longitud '+str(len(messagesContainers)))
+        chatContainer = browser.find_element(By.XPATH,'//*[@id="main"]/div[2]/div/div[2]')
+        childrenChatContainer = len(chatContainer.find_elements(By.XPATH,'*'))
+        positionMessagesContainer = '3' if childrenChatContainer == 3 else '2'
+        messagesContainer = browser.find_element(By.XPATH,'//*[@id="main"]/div[2]/div/div[2]/div[%s]' %(positionMessagesContainer))
+        messages = messagesContainer.find_elements(By.XPATH,'*')
         
-        #pathFitstCheckButton = '//*[@id="main"]/div[2]/div/div[2]/div[3]/div[%s]/div/div/div[1]/div[1]/div/div[2]/div/div/span' %(str(len(messagesContainers) - 2))
-        #pathSecondCheckButton = '//*[@id="main"]/div[2]/div/div[2]/div[3]/div[%s]/div/div/div[1]/div[1]/div/div[2]/div/div/span'%(str(len(messagesContainers) - 1))
-        #pathThirdCheckButton = '//*[@id="main"]/div[2]/div/div[2]/div[3]/div[%s]/div/div/div[1]/div[1]/div/div[2]/div/div/span' %(str(len(messagesContainers)))
         ##sepero a que las imagenes se hayan enviado
-        try:
+        try:    
             WebDriverWait(browser, 30).until(
-                CF.allImagesSent(len(listDirImages), len(messagesContainers))
+                CF.allImagesSent(len(listDirImages), len(messages), positionMessagesContainer)
             )
         except: 
             print('NO SE PUDO ENVIAR LAS IMAGENES, ES PROBABLE QUE NO ESTE CONECTADO A INTERNET, O LA CONEXION SEA MUY LENTA, ENVÍE MANUALMENTE LAS IMAGENES Y EJECUTE NUEVAMENTE EL ROBOT...')
@@ -215,7 +216,7 @@ def scheduleTask(browser, mensaje, diasDeEspera):
     
     #espero a que el datepicker se muestre en el dom
     WebDriverWait(browser, 30).until(
-        EC.visibility_of((By.XPATH,'//*[@id="picker-popover"]/div[2]'))                
+        EC.visibility_of_element_located((By.XPATH,'//*[@id="picker-popover"]/div[2]'))                
     )
     #selecciono la fecha
     selectDateInDatePicker(browser, CF.addDays(diasDeEspera))
@@ -247,7 +248,7 @@ def fillObservations(browser, observation):
 def doTracktoCustomer(browser, xpathOfCustomer, hasLead, messagesTemplate, observations, xpathDictionary):
     #hago click en el cliente que mas tiempo le tengo olvidado
     editUser = WebDriverWait(browser, 30).until(
-            EC.element_to_be_clickable((By.XPATH, '%s/td[2]' % (xpathOfCustomer))) 
+            EC.element_to_be_clickable((By.XPATH, '%s/td[2]/*[name()="svg"]' % (xpathOfCustomer))) 
     )
     editUser.click()
 
@@ -320,7 +321,9 @@ def doTracktoCustomer(browser, xpathOfCustomer, hasLead, messagesTemplate, obser
     infoSend = sendInfoWhatsApp(browser, phoneNumber, messages, '%s\\FotosTrivo\\%s' %(os.path.expanduser("~"), xpathDictionary.name))
    
     #antes de regresar, Agrego una tarea nueva para una semana
-    newTaskButton = browser.find_element(By.XPATH,'//*[@id="root"]/div/div[2]/div/div/div/div/div[2]/div[%s]/div/*[name()="svg"]' %('9' if hasLead else '8'))
+    newTaskButton = WebDriverWait(browser, 30).until(
+        EC.element_to_be_clickable((By.XPATH,'//*[@id="root"]/div/div[2]/div/div/div/div/div[2]/div[%s]/div/*[name()="svg"]' %('9' if hasLead else '8')))
+    )
     newTaskButton.click()
     
     #SECCION DE AGENDAMIENTO DE NUEVA TAREA

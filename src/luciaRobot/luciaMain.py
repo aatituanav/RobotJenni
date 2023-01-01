@@ -28,6 +28,7 @@ def startLuciaRobot(browser):
     while True:
         #obtengo el xpath de la fila del cliente que lleva mas tiempo sin interacciones
         xpath = operations.findCustomertoEdit(browser)
+        print(xpath)
         ### NOTA IMPORTANTE
         ### En una parte del cuestionario, los clientes que tienen sector definido (eso se ve en la tabla con un signo '-'), se les muestra una opcion extra (en la primera posicion)
         ### La opcion es "ASIGNAR LEAD", la cual va en la primera posicion del cuestionario

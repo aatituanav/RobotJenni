@@ -4,7 +4,7 @@ import sys
 import os
 
 
-def allImagesSent(numberOfImagesSent, numberOfElements):
+def allImagesSent(numberOfImagesSent, numberOfElements, positionMessagesContainer):
     #este metodo veridica que todas las imagenes enviadas se hayan enviado o recibido
     #print('SE HARA UNA VALIDACION DE LAS IMAGESNES')
     #este es el xpath del span que muestra las palomitas de enviado o recibido
@@ -14,7 +14,7 @@ def allImagesSent(numberOfImagesSent, numberOfElements):
             #print(numberOfImagesSent, numberOfElements)
             for i in range(numberOfImagesSent):
                 #print(i)
-                xpath = '//*[@id="main"]/div[2]/div/div[2]/div[3]/div[%s]/div/div/div[1]/div[1]/div/div[2]/div/div/span' %(numberOfElements - i)
+                xpath = '//*[@id="main"]/div[2]/div/div[2]/div[%s]/div[%s]/div/div/div[1]/div[1]/div/div[2]/div/div/span' %(positionMessagesContainer, numberOfElements - i)
                 #print('--------------------------------------------------------')
                 #print(xpath)
                 element_text = driver.find_element(By.XPATH, xpath).get_attribute('aria-label')
@@ -78,10 +78,16 @@ def formatPhoneNumber(phoneNumber):
     #   096-905-8836
     #   0969058836
     #   +593969058836
+    #   +5930969058836
     phoneNumber = phoneNumber.replace('-','').strip()
     if phoneNumber.find('+') != -1 and len(phoneNumber) == 13:
+        #   +593969058836
         return phoneNumber
+    elif phoneNumber.find('+') != -1 and len(phoneNumber) == 14:
+        #   +5930969058836
+        return phoneNumber[:4]+phoneNumber[5:]
     elif len(phoneNumber) == 10:
+        #   0969058836
         return '+593' + phoneNumber[1:]
     else:
         return None
