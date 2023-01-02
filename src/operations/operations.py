@@ -41,8 +41,8 @@ def orderDataTableByLastContact(browser):
         browser.quit()
 
 def selectDateInDatePicker(browser, date):
+    
     year, month, day = [str(int(item)) for item in date.split('-')]
-    #print(year, month, day)
     #print('date '+date)
     meses = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre']
     
@@ -56,8 +56,8 @@ def selectDateInDatePicker(browser, date):
         )
         yearOption.click()
     
-    headerYear = browser.find_element(By.XPATH, '//*[@id="picker-popover"]/div[2]/div[3]/div/div[1]/div[1]/div/p')
-    monthText = headerYear.text.split(' ')[0]
+    calendarHeader = browser.find_element(By.XPATH, '//*[@id="picker-popover"]/div[2]/div[3]/div/div[1]/div[1]/div/p')
+    monthText = calendarHeader.text.split(' ')[0]
     if monthText != meses[int(month) - 1]: 
         #para saber si se debe ir a la derecha en los meses o a la izquierda
         if meses.index(monthText) + 1 > int(month):
@@ -73,18 +73,17 @@ def selectDateInDatePicker(browser, date):
                 rightButton = browser.find_element(By.XPATH, '//*[@id="picker-popover"]/div[2]/div[3]/div/div[1]/div[1]/button[2]')
                 rightButton.click()   
                 time.sleep(0.05)
-        #si es igual simplemente no se ejecuta y continuo eligiendo el dia
-        dayOption = WebDriverWait(browser, 30).until(
-            EC.element_to_be_clickable((By.XPATH,'//*[text()="%s"]//ancestor::button' %(day)))
-        )
-        dayOption.click()
-
-        time.sleep(0.2)
-        hourOption = browser.find_element(By.XPATH, '//*[@id="picker-popover"]/div[2]/div[3]/div/div/div/div[1]')
-        hourOption.click()
-        time.sleep(0.2)
-        hourOption.click()
-        time.sleep(0.2)
+    #si es igual simplemente no se ejecuta y continuo eligiendo el dia
+    dayOption = WebDriverWait(browser, 30).until(
+        EC.element_to_be_clickable((By.XPATH,'//*[text()="%s"]//ancestor::button' %(day)))
+    )
+    dayOption.click()
+    time.sleep(0.2)
+    hourOption = browser.find_element(By.XPATH, '//*[@id="picker-popover"]/div[2]/div[3]/div/div/div/div[1]')
+    hourOption.click()
+    time.sleep(0.2)
+    hourOption.click()
+    time.sleep(0.2)
   
 def findCustomertoEdit(browser):
         #Los nuevos usuarios aparecen con el campo "FECHA ULTIMO CONTACTO" vacio, por lo cual no hay que hacer seguimiento de dichos usuarios
