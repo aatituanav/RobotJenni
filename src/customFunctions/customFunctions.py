@@ -3,6 +3,46 @@ from selenium.webdriver.common.by import By
 import sys
 import os
 
+def getMessagesContainer(browser):
+    chatContainer = browser.find_element(By.XPATH,'//*[@id="main"]/div[2]/div/div[2]')
+    childrenChatContainer = len(chatContainer.find_elements(By.XPATH,'*'))
+    positionMessagesContainer = '3' if childrenChatContainer == 3 else '2'
+    return browser.find_element(By.XPATH,'//*[@id="main"]/div[2]/div/div[2]/div[%s]' %(positionMessagesContainer))
+
+def getMessagesInChat(browser):
+    messagesContainer = getMessagesContainer(browser)
+    return messagesContainer.find_elements(By.XPATH,'*')
+
+'''def checkPreviousSendMessage(browser, msg):
+    #verifica si ya se ha enviado el mensaje al usuario
+    #recordar que el el contenedor donde contienen los mensajes consta de varios contenedores, 
+    #el primero es un espaciado
+    #el segundo es un mensaje que dice (mendajes anteriores a la fecha dd-mm-aa) solo se muestra cuando se tienen bastantes mensajes con el usuario
+    #el tercero es el contenedor de chats
+    #por lo tanto la ubicacion de el contenedor de chats esta en positionMessagesContainer
+    messages = cf.getMessagesInChat(browser) 
+    for message in messages:
+        if msg in message.text:
+            return True
+    return False'''
+
+    
+def messagesLoaded():
+    #este metodo verifica que los mensajes se hayan cargado validando dos componentes
+    #uno es para cuando es nuevo mensaje
+    #el otro es para cuando ya se ha enviado algun mensaje 
+    #se validan los dos por si uno falla
+    def _predicate(driver):
+        try:
+            driver.find_element(By.XPATH, '//*[@id="main"]/div[2]/div/div[2]/div[2]/div[2]/div/div')
+            return True
+        except:
+            try:
+                driver.find_element(By.XPATH, '//*[@id="main"]/div[2]/div/div[2]/div[2]/div/div')
+                return True
+            except:
+                return False
+    return _predicate
 
 def allImagesSent(numberOfImagesSent, numberOfElements, positionMessagesContainer):
     #este metodo veridica que todas las imagenes enviadas se hayan enviado o recibido
@@ -79,7 +119,8 @@ def formatPhoneNumber(phoneNumber):
     #   0969058836
     #   +593969058836
     #   +5930969058836
-    phoneNumber = phoneNumber.replace('-','').strip()
+    #   +593 99 493 8897
+    phoneNumber = phoneNumber.replace('-','').replace(' ','').strip()
     if phoneNumber.find('+') != -1 and len(phoneNumber) == 13:
         #   +593969058836
         return phoneNumber

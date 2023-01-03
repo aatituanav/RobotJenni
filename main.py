@@ -4,6 +4,7 @@ from dotenv import load_dotenv
 from datetime import datetime
 from getpass import getpass
 
+#import src.operations.operations as op
 import src.promonsaRobot.promonsaMain as robotPromonsa
 import src.customFunctions.customFunctions as cf
 import src.trivoRobot.trivoMain as robotTrivo
@@ -48,3 +49,10 @@ if datetime.now() <= datetime.strptime('2023-01-26', "%Y-%m-%d"):
 else:
     print('El periodo de prueba ha terminado.')
     
+#browser = webdriver.Chrome(service = driver_service, options=options)
+
+#op.sendInfoWhatsApp(browser, "+593993055278", ["Mensaje de prueba"], '%s\\FotosTrivo\\%s' %(os.path.expanduser("~"), "Trivo"))
+#time.sleep(9999)
+#browser.get('https://web.whatsapp.com/send?l=es&phone=593993055270&text=') 
+#time.sleep(10)
+

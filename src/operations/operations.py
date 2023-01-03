@@ -145,26 +145,28 @@ def sendInfoWhatsApp(browser, phone, messages, dirImages):
             messageBoxText.send_keys(msg)
             messageBoxText.send_keys(Keys.ENTER)
             time.sleep(2)
+        #boton para enviar imagenes
         sendFileButton = browser.find_element(By.XPATH,'//*[@id="main"]/footer/div[1]/div/span[2]/div/div[1]/div[2]/div')
         sendFileButton.click()
-        selectSendImage = WebDriverWait(browser, 30).until(
-            EC.element_to_be_clickable((By.XPATH,'//*[@id="main"]/footer/div[1]/div/span[2]/div/div[1]/div[2]/div/span/div/div/ul/li[1]/button'))
+        inputImages = WebDriverWait(browser, 30).until(
+            EC.presence_of_element_located((By.XPATH,'//*[@id="main"]/footer/div[1]/div/span[2]/div/div[1]/div[2]/div/span/div/div/ul/li[1]/button/input'))
         )
-        selectSendImage.click()
-        
+
         time.sleep(1)
         ##obtengo el path de todas las imagenes en la carpeta Imagenes/FotosTrivo/Lucia
         imageInput = ''
         listDirImages = os.listdir(dirImages)
         for image in listDirImages:
-            imageInput += '"'+ dirImages +"\\"+ image + '" '
-        pyautogui.write(imageInput)  
-        pyautogui.press('enter')
+            imageInput += ''+ dirImages +"\\"+ image + '\n'
+        
+        #busco el imput para enviar los archivos y los coloco
+        inputImages.send_keys(imageInput.strip())
+        #boton para confirmar el envio
         sendImageButton = WebDriverWait(browser, 30).until(
             EC.element_to_be_clickable((By.XPATH, '//*[@id="app"]/div/div/div[2]/div[2]/span/div/span/div/div/div[2]/div/div[2]/div[2]/div'))
         )
-        sendImageButton.click()         
-        
+        sendImageButton.click()
+
         time.sleep(4)
         ##espero a que se haya enviado la imagen, y cierro la pestaña de whatsapp
         ##obtengo el div del chat, el cual tiene todos los divs de los mensajes (la cantidad de divs internos es la cantidad de mensajes cargados en la web)
@@ -180,8 +182,10 @@ def sendInfoWhatsApp(browser, phone, messages, dirImages):
                 CF.allImagesSent(len(listDirImages), len(messages), positionMessagesContainer)
             )
         except: 
-            print('NO SE PUDO ENVIAR LAS IMAGENES, ES PROBABLE QUE NO ESTE CONECTADO A INTERNET, O LA CONEXION SEA MUY LENTA, ENVÍE MANUALMENTE LAS IMAGENES Y EJECUTE NUEVAMENTE EL ROBOT...')
+            print('NO SE PUDO ENVIAR LAS IMAGENES, ENVÍE MANUALMENTE LAS IMAGENES Y EJECUTE NUEVAMENTE EL ROBOT...')
             print('Numero telefonico pendiente de envio de Informacion: '+phone)
+            print('LOG:')
+            print(len(listDirImages), len(messages))
             browser.close()
             browser.switch_to.window(browser.window_handles[0])
             browser.quit()
@@ -220,7 +224,9 @@ def scheduleTask(browser, mensaje, diasDeEspera):
     #selecciono la fecha
     selectDateInDatePicker(browser, CF.addDays(diasDeEspera))
     #click en el boton de agendar
-    createTaskButton = browser.find_element(By.XPATH, '/html/body/div[5]/div[2]/div/div[3]/button[1]')  
+    createTaskButton = WebDriverWait(browser, 30).until(
+        EC.element_to_be_clickable((By.XPATH,'/html/body/div[5]/div[2]/div/div[3]/button[1]'))                
+    )
     createTaskButton.click()
     #click en el boton de confirmar
     confirmTask = WebDriverWait(browser, 30).until(
@@ -318,15 +324,14 @@ def doTracktoCustomer(browser, xpathOfCustomer, hasLead, messagesTemplate, obser
     browser.switch_to.window(browser.window_handles[1])
     
     infoSend = sendInfoWhatsApp(browser, phoneNumber, messages, '%s\\FotosTrivo\\%s' %(os.path.expanduser("~"), xpathDictionary.name))
-   
-    #antes de regresar, Agrego una tarea nueva para una semana
-    newTaskButton = WebDriverWait(browser, 30).until(
-        EC.element_to_be_clickable((By.XPATH,'//*[@id="root"]/div/div[2]/div/div/div/div/div[2]/div[%s]/div/*[name()="svg"]' %('9' if hasLead else '8')))
-    )
-    newTaskButton.click()
-    
-    #SECCION DE AGENDAMIENTO DE NUEVA TAREA
-    scheduleTask(browser, 'Seguimiento', 14)
+    if infoSend:
+        #antes de regresar, Agrego una tarea nueva para una semana
+        newTaskButton = WebDriverWait(browser, 30).until(
+            EC.element_to_be_clickable((By.XPATH,'//*[@id="root"]/div/div[2]/div/div/div/div/div[2]/div[%s]/div/*[name()="svg"]' %('9' if hasLead else '8')))
+        )
+        newTaskButton.click()
+        #SECCION DE AGENDAMIENTO DE NUEVA TAREA
+        scheduleTask(browser, 'Seguimiento', 14)
     #regreso una paguina
     goBackFirst = WebDriverWait(browser, 30).until(
         EC.element_to_be_clickable((By.XPATH, '//*[@id="root"]/div/div[2]/div/div/div/div/div[1]/div/button'))
