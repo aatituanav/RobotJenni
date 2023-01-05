@@ -224,14 +224,24 @@ def scheduleTask(browser, mensaje, diasDeEspera):
     #selecciono la fecha
     selectDateInDatePicker(browser, CF.addDays(diasDeEspera))
     #click en el boton de agendar
-    createTaskButton = WebDriverWait(browser, 30).until(
-        EC.element_to_be_clickable((By.XPATH,'/html/body/div[5]/div[2]/div/div[3]/button[1]'))                
+    #espero a que se pueda hacer click y a que el datapicker haya desaparecido
+    WebDriverWait(browser, 30).until(
+        EC.all_of(
+            (EC.element_to_be_clickable((By.XPATH,'/html/body/div[5]/div[2]/div/div[3]/button[1]'))),                 
+            (EC.invisibility_of_element_located((By.XPATH,'//*[@id="picker-popover"]/div[2]')))
+        )
     )
+    createTaskButton = browser.find_element(By.XPATH,'/html/body/div[5]/div[2]/div/div[3]/button[1]')
     createTaskButton.click()
     #click en el boton de confirmar
-    confirmTask = WebDriverWait(browser, 30).until(
-        EC.element_to_be_clickable((By.XPATH, '/html/body/div[6]/div[2]/div/div[3]/button[2]'))
+    #espero a que sea visible y se pueda hacer click
+    WebDriverWait(browser, 30).until(
+        EC.all_of(
+            (EC.element_to_be_clickable((By.XPATH,'/html/body/div[6]/div[2]/div/div[3]/button[2]'))),                 
+            (EC.visibility_of_element_located((By.XPATH,'/html/body/div[6]/div[2]/div/div[3]/button[2]')))
+        )
     )
+    confirmTask = browser.find_element(By.XPATH,'/html/body/div[6]/div[2]/div/div[3]/button[2]')
     confirmTask.click()
     #=============================================================================================
     #=============================================================================================
@@ -309,10 +319,15 @@ def doTracktoCustomer(browser, xpathOfCustomer, hasLead, messagesTemplate, obser
     #click en el boton para continuar (Esto abre whatsapp en una nueva ventana)
     continueButton.click()
     #confirmar que deseo continuar
-    confirmButton = WebDriverWait(browser, 30).until(
-        EC.element_to_be_clickable((By.XPATH,'/html/body/div[4]/div[2]/div/div[3]/button[2]'))                 ## CONFIRMAR (USAR ESTA INSTRUCCION)
+    WebDriverWait(browser, 30).until(
+        EC.all_of(
+            (EC.element_to_be_clickable((By.XPATH,'/html/body/div[4]/div[2]/div/div[3]/button[2]'))),                 ## CONFIRMAR (USAR ESTA INSTRUCCION)
+            (EC.visibility_of_element_located((By.XPATH,'/html/body/div[4]/div[2]/div/div[3]/button[2]')))
+        )
         #EC.element_to_be_clickable((By.XPATH,'/html/body/div[4]/div[2]/div/div[3]/button[1]'))                  ## CANCELAR
-    ) 
+    )
+    confirmButton = browser.find_element(By.XPATH,'/html/body/div[4]/div[2]/div/div[3]/button[2]')
+
     confirmButton.click()
 
     #pyautogui.hotkey('ctrl', 't')                               ##BORRAR ESTA INSTRUCCION           
