@@ -1,6 +1,6 @@
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
-from src.model.Observation import Observation
+#from src.model.Observation import Observation
 from src.model.ProjectXPath import XPathByProject
 from selenium.webdriver.common.by import By
 
@@ -16,12 +16,10 @@ def startTrivoRobot(browser):
 
     xpathDictionary = XPathByProject('trivo')
     messagesTemplate = ['']
-    observations = [
+    '''observations = [
         Observation("whatsapp", 'Seguimiento.'),
-        Observation("whatsapp", 'Video de Terralta.'),
-        Observation("whatsapp", 'Tarjeta de presentacion.'),
         Observation("nota", 'Esperando contestación.'),
-    ]
+    ]'''
 
     operations.login(browser, xpathDictionary)
     browser.get('https://admin.trivo.com.ec/leads')
@@ -42,7 +40,7 @@ def startTrivoRobot(browser):
         if not CF.validDateforContinue(lastDateContact, 50):
             break
             
-        operations.doTracktoCustomer(browser, xpath, hasLead, messagesTemplate, observations, xpathDictionary)
+        operations.doTracktoCustomer(browser, xpath, hasLead, messagesTemplate, xpathDictionary)
 
         
 

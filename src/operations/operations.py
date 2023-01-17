@@ -1,7 +1,9 @@
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.common.keys import Keys
+from src.model.Observation import Observation
 from selenium.webdriver.common.by import By
+
 
 import src.customFunctions.customFunctions as CF
 import pyautogui
@@ -73,11 +75,16 @@ def selectDateInDatePicker(browser, date):
                 rightButton = browser.find_element(By.XPATH, '//*[@id="picker-popover"]/div[2]/div[3]/div/div[1]/div[1]/button[2]')
                 rightButton.click()   
                 time.sleep(0.05)
-    #si es igual simplemente no se ejecuta y continuo eligiendo el dia
-    dayOption = WebDriverWait(browser, 30).until(
-        EC.element_to_be_clickable((By.XPATH,'//*[text()="%s"]//ancestor::button' %(day)))
+    #espero a que el boton 15 se pueda hacer click (esto es por que cuando quiero hacer click en botones como el 31, hay 2 en el calendario, uno oculto y otro no, pero cuando hace la comprobacion si es clickable, solamente analiza con el primer elemento encontrado (el que no se puede hacer click) por eso la comprobacion falla), por eso hago la comprobacion con un boton que nunca va a tener un duplicado (que es el 15) 
+    WebDriverWait(browser, 30).until(
+        EC.element_to_be_clickable((By.XPATH,'//*[text()="15"]//ancestor::button')) 
     )
-    dayOption.click()
+    dayOption = browser.find_elements(By.XPATH,'//*[text()="%s"]//ancestor::button' %(day))
+    #obtengo todos los botones y hago click en el que se puede hacer click
+    for day in dayOption:
+        if day.is_displayed():
+            day.click()
+    #obtengo los dos potenciales botones que pueden aparecer y analizo cual de ellos se puede hacer click
     time.sleep(0.2)
     hourOption = browser.find_element(By.XPATH, '//*[@id="picker-popover"]/div[2]/div[3]/div/div/div/div[1]')
     hourOption.click()
@@ -260,10 +267,14 @@ def fillObservations(browser, observation):
         EC.invisibility_of_element_located((By.XPATH,'//*[@id="root"]/div/div[2]/div/div[2]/div[2]/div[2]/div[8]/div[1]/div/*[name()="svg"]'))
     )
 
-def doTracktoCustomer(browser, xpathOfCustomer, hasLead, messagesTemplate, observations, xpathDictionary):
+def doTracktoCustomer(browser, xpathOfCustomer, hasLead, messagesTemplate, xpathDictionary):
+
+    #obtengo la campania o proyecto en el que el cliente esta instcrito
+    campania = browser.find_element(By.XPATH, '%s/td[4]' % (xpathOfCustomer)).text
+
     #hago click en el cliente que mas tiempo le tengo olvidado
     editUser = WebDriverWait(browser, 30).until(
-            EC.element_to_be_clickable((By.XPATH, '%s/td[2]/*[name()="svg"]' % (xpathOfCustomer))) 
+            EC.element_to_be_clickable((By.XPATH, '%s/td[2]/*[name()="svg"]' % (xpathOfCustomer)))
     )
     editUser.click()
 
@@ -327,6 +338,7 @@ def doTracktoCustomer(browser, xpathOfCustomer, hasLead, messagesTemplate, obser
         #EC.element_to_be_clickable((By.XPATH,'/html/body/div[4]/div[2]/div/div[3]/button[1]'))                  ## CANCELAR
     )
     confirmButton = browser.find_element(By.XPATH,'/html/body/div[4]/div[2]/div/div[3]/button[2]')
+    #confirmButton = browser.find_element(By.XPATH,'/html/body/div[4]/div[2]/div/div[3]/button[1]')              ## CANCELAR
 
     confirmButton.click()
 
@@ -337,8 +349,11 @@ def doTracktoCustomer(browser, xpathOfCustomer, hasLead, messagesTemplate, obser
     browser.switch_to.window(browser.window_handles[0])
     pyautogui.hotkey('ctrl', 't')
     browser.switch_to.window(browser.window_handles[1])
+
+    folderRelativeImages = 'Trivo\\%s' %(xpathDictionary.getFolder(campania)) if xpathDictionary.name=="Trivo" else xpathDictionary.name
+    folderAbsoluteImages = '%s\\CRM\\%s' %(os.path.expanduser("~"), folderRelativeImages)
     
-    infoSend = sendInfoWhatsApp(browser, phoneNumber, messages, '%s\\FotosTrivo\\%s' %(os.path.expanduser("~"), xpathDictionary.name))
+    infoSend = sendInfoWhatsApp(browser, phoneNumber, messages, folderAbsoluteImages)
     if infoSend:
         #antes de regresar, Agrego una tarea nueva para una semana
         newTaskButton = WebDriverWait(browser, 30).until(
@@ -361,6 +376,19 @@ def doTracktoCustomer(browser, xpathOfCustomer, hasLead, messagesTemplate, obser
         EC.invisibility_of_element_located((By.XPATH,'//*[@id="root"]/div/div[2]/div/div/div/div[2]/div[8]/div[1]/div/*[name()="svg"]'))
     )
     
+    #Observaciones 
+    observations = [
+        Observation("nota", 'Seguimiento.')
+    ]
+    ##analizo si envio imagenes o videos
+    listDirImages = os.listdir(folderAbsoluteImages)
+    print(listDirImages)
+    if any(file.endswith((".mp4", ".MP4")) for file in os.listdir(folderAbsoluteImages)):
+        observations.append(Observation("whatsapp", 'Video de %s' %(xpathDictionary.getFolder(campania).title())))
+    if any(file.endswith((".png", ".jpg", ".jpeg", ".PNG", ".JPG", ".JPEG")) for file in os.listdir(folderAbsoluteImages)):
+        observations.append(Observation("whatsapp", 'Imagen de %s' %(xpathDictionary.getFolder(campania).title())))
+    observations.append(Observation("nota", 'Esperando contestación.'))
+
     #si se envio por whatsapp la info, procedo a llenar las observaciones
     if infoSend:
         for observation in observations:
