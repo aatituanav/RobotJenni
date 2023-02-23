@@ -37,7 +37,9 @@ def startTrivoRobot(browser):
         #obtengo la fecha de ultimo contacto
         lastDateContact =  browser.find_element(By.XPATH, '%s/td[12]' % (xpath)).text
         #verifico que el la ultima fecha de contacto sea mayor a n dias, caso contrario paro de hacer seguimiento
-        if not CF.validDateforContinue(lastDateContact, 50):
+        day = 15
+        if not CF.validDateforContinue(lastDateContact, day):
+            print("Se termino con los leads con %s dias sin contactar" %day)
             break
             
         operations.doTracktoCustomer(browser, xpath, hasLead, messagesTemplate, xpathDictionary)

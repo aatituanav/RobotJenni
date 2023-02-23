@@ -28,7 +28,7 @@ options.add_experimental_option("detach", True)
 application_path = os.path.dirname(sys.executable)
 driver_service = Service(executable_path= cf.resource_path('chromedriver.exe'))
 
-if datetime.now() <= datetime.strptime('2023-01-26', "%Y-%m-%d"):
+if datetime.now() <= datetime.strptime('2023-02-26', "%Y-%m-%d"):
     while True:
         print('CONTRASEÑA:')
         password = getpass()

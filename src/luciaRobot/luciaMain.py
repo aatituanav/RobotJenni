@@ -41,7 +41,7 @@ def startLuciaRobot(browser):
         if not CF.validDateforContinue(lastDateContact, 50):
             break
             
-        operations.doTracktoCustomer(browser, xpath, hasLead, messagesTemplate, observations, xpathDictionary)
+        operations.doTracktoCustomer(browser, xpath, hasLead, messagesTemplate, xpathDictionary)
 
         
 

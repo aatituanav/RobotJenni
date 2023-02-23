@@ -146,6 +146,7 @@ def validDateforContinue(date, days):
 
 def addDays(daysAdded):
     #dateFormatted = datetime.strptime(date, "%Y-%m-%d")
+    
     return (datetime.now() + timedelta(days=daysAdded)).strftime("%Y-%m-%d")
 
 

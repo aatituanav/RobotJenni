@@ -3,6 +3,8 @@ from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.common.keys import Keys
 from src.model.Observation import Observation
 from selenium.webdriver.common.by import By
+from random import randrange
+
 
 
 import src.customFunctions.customFunctions as CF
@@ -43,6 +45,7 @@ def orderDataTableByLastContact(browser):
         browser.quit()
 
 def selectDateInDatePicker(browser, date):
+    print(date)
     
     year, month, day = [str(int(item)) for item in date.split('-')]
     #print('date '+date)
@@ -71,7 +74,7 @@ def selectDateInDatePicker(browser, date):
 
         elif meses.index(monthText) + 1 < int(month):
             #print('adelantar %s meses' %(int(month) - (meses.index(monthText) + 1 )))
-            for i in range(meses.index(monthText) + 1  - int(month)):
+            for i in range(int(month) - (meses.index(monthText) + 1 )):
                 rightButton = browser.find_element(By.XPATH, '//*[@id="picker-popover"]/div[2]/div[3]/div/div[1]/div[1]/button[2]')
                 rightButton.click()   
                 time.sleep(0.05)
@@ -82,8 +85,10 @@ def selectDateInDatePicker(browser, date):
     dayOption = browser.find_elements(By.XPATH,'//*[text()="%s"]//ancestor::button' %(day))
     #obtengo todos los botones y hago click en el que se puede hacer click
     for day in dayOption:
+        print('dayyyyyyyyyyyyyyyyy')
         if day.is_displayed():
             day.click()
+            break
     #obtengo los dos potenciales botones que pueden aparecer y analizo cual de ellos se puede hacer click
     time.sleep(0.2)
     hourOption = browser.find_element(By.XPATH, '//*[@id="picker-popover"]/div[2]/div[3]/div/div/div/div[1]')
@@ -213,6 +218,7 @@ def scheduleTask(browser, mensaje, diasDeEspera):
     #SECCION DE AGENDAMIENTO DE NUEVA TAREA
     #mensaje: es el titulo de la tarea
     #diasDeEspera: son los dias de espera (si se necesita la tarea para de aqui a 15 dias, se colocara el numero 15)
+    #tambien puede ser la fecha para la cual se desea agendar la tarea
     #=============================================================================================
     #=============================================================================================
     titleInput = WebDriverWait(browser, 30).until(
@@ -229,7 +235,8 @@ def scheduleTask(browser, mensaje, diasDeEspera):
         EC.visibility_of_element_located((By.XPATH,'//*[@id="picker-popover"]/div[2]'))                
     )
     #selecciono la fecha
-    selectDateInDatePicker(browser, CF.addDays(diasDeEspera))
+
+    selectDateInDatePicker(browser, CF.addDays(diasDeEspera) if isinstance(diasDeEspera, int) else diasDeEspera)
     #click en el boton de agendar
     #espero a que se pueda hacer click y a que el datapicker haya desaparecido
     WebDriverWait(browser, 30).until(
@@ -313,6 +320,7 @@ def doTracktoCustomer(browser, xpathOfCustomer, hasLead, messagesTemplate, xpath
          EC.element_to_be_clickable((By.XPATH, xpathDictionary.LI_seguimientoInfoInicialEnviada))
     )
     selectFieldSecondOption.click()
+    #time.sleep(9999)
     #copio el mensaje que se enviara al whatsapo
     messageField = WebDriverWait(browser, 30).until(
         EC.visibility_of_element_located((By.XPATH,'//*[@id="root"]/div/div[2]/div/div/div/div/div[2]/div[%s]/div[2]/div[2]/div[2]/div' %('3' if hasLead else '2')))
@@ -352,7 +360,7 @@ def doTracktoCustomer(browser, xpathOfCustomer, hasLead, messagesTemplate, xpath
 
     folderRelativeImages = 'Trivo\\%s' %(xpathDictionary.getFolder(campania)) if xpathDictionary.name=="Trivo" else xpathDictionary.name
     folderAbsoluteImages = '%s\\CRM\\%s' %(os.path.expanduser("~"), folderRelativeImages)
-    
+
     infoSend = sendInfoWhatsApp(browser, phoneNumber, messages, folderAbsoluteImages)
     if infoSend:
         #antes de regresar, Agrego una tarea nueva para una semana
@@ -361,7 +369,9 @@ def doTracktoCustomer(browser, xpathOfCustomer, hasLead, messagesTemplate, xpath
         )
         newTaskButton.click()
         #SECCION DE AGENDAMIENTO DE NUEVA TAREA
-        scheduleTask(browser, 'Seguimiento', 14)
+        #14
+        #2023-12-22
+        scheduleTask(browser, 'Seguimiento', 14 + (randrange(5)))
     #regreso una paguina
     goBackFirst = WebDriverWait(browser, 30).until(
         EC.element_to_be_clickable((By.XPATH, '//*[@id="root"]/div/div[2]/div/div/div/div/div[1]/div/button'))

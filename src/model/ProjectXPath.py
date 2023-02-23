@@ -12,7 +12,7 @@ class XPathByProject:
             self.name = 'Trivo'
             self.password = os.getenv("PASSWORD_TRIVO")  
             self.srcLogo = 'https://s3.us-east-2.amazonaws.com/media.trivo.com.ec/Companies/1585002874423-lg.png'
-            self.LI_seguimientoInfoInicialEnviada = '//*[@id="menu-Enviar whatsapp"]/div[2]/ul/li[34]'
+            self.LI_seguimientoInfoInicialEnviada = '//*[@id="menu-Enviar whatsapp"]/div[2]/ul/li[35]'
             self.folder ={
                 "Campaña Diamond Garden":"DIAMOND GARDEN",
                 "Campaña Foret":"APARTAT",
@@ -25,11 +25,13 @@ class XPathByProject:
                 "Campaña Terralta":"TERRALTA"
                 }
         elif project == 'lucia':
+            self.folder = None
             self.name = 'Lucia'
             self.password = os.getenv("PASSWORD_LUCIA") 
             self.srcLogo = 'https://s3.us-east-2.amazonaws.com/media.trivo.com.ec/Companies/1635263729281-lg.png'
             self.LI_seguimientoInfoInicialEnviada = '//*[@id="menu-Enviar whatsapp"]/div[2]/ul/li[3]'
         elif project == 'promonsa':
+            self.folder = None
             self.name = 'Promonsa'
             self.password = os.getenv("PASSWORD_PROMONSA") 
             self.srcLogo = 'https://s3.us-east-2.amazonaws.com/media.trivo.com.ec/Companies/1615475557832-lg.png'
@@ -37,7 +39,7 @@ class XPathByProject:
 
     def getFolder(self, projectName):
         if self.folder == None:
-            return ""
+            return self.name
         else:
             try:
                 folder = self.folder[projectName]
